@@ -28,6 +28,16 @@ vcpuNode* vcpuarray;
 
 void CPUScheduler(virConnectPtr conn,int interval);
 
+unsigned char* generateMap(int total_pcpus, int cpuIndex) {
+	unsigned char* map = malloc(VIR_CPU_MAPLEN(total_pcpus));
+	memset(map, 0, VIR_CPU_MAPLEN(total_pcpus));
+	unsigned char* ptr = map;
+	int offset = cpuIndex / 8;
+	ptr += offset;
+	*ptr = (0x01) << (cpuIndex % 8);
+	return map;
+}
+
 /*
 DO NOT CHANGE THE FOLLOWING FUNCTION
 */
@@ -50,6 +60,18 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
+	// for(int pcpus = 4; pcpus < 24; pcpus++) {
+	// 	for(int j = 0; j < pcpus; j++) {
+	// 		unsigned char* map = generateMap(pcpus, j);
+	// 		for(int i = 0; i < VIR_CPU_MAPLEN(pcpus); i++) {
+	// 			printf("%d ", *map);
+	// 			map++;
+	// 		}
+	// 		printf("Done\n");
+	// 	}
+	// 	printf("Finished pcpu test for %d\n", pcpus);
+	// }
+
 	// Gets the interval passes as a command line argument and sets it as the STATS_PERIOD for collection of balloon memory statistics of the domains
 	int interval = atoi(argv[1]);
 	
@@ -64,7 +86,7 @@ int main(int argc, char *argv[])
 
 	// Get the total number of pCpus in the host
 	unsigned int onlineCPUs = 0;
-	unsigned char * cpuMap;
+	unsigned char * cpuMap; // Comments: Free it later
 	int ans = virNodeGetCPUMap(conn, &cpuMap, &onlineCPUs, 0);
 	// printf("%x %d\n", *cpuMap, *cpuMap);
 	// for(int i = 7; i >= 0; i--) {
@@ -189,8 +211,9 @@ void CPUScheduler(virConnectPtr conn, int interval)
 			}
 			// printf("Min usage %f and min usage CPU is %d\n", minPcpuusage, minPcpuusageindex);
 			pcpuUsageNormalized[minPcpuusageindex] += vcpuarray[i].usage;
-			unsigned char* map = malloc(1);
-			*map = (0x01) << (minPcpuusageindex);
+
+			unsigned char* map = generateMap(total_pcpus, minPcpuusageindex);
+
 			// printf("map is %d \n", *map);
 			int status = virDomainPinVcpu(domainsList[i], 0, map, VIR_CPU_MAPLEN(total_pcpus));
 			if(status == -1) {
