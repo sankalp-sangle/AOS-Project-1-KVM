@@ -8,11 +8,12 @@
 #include<signal.h>
 #define MIN(a,b) ((a)<(b)?a:b)
 #define MAX(a,b) ((a)>(b)?a:b)
+#define DIV_FACTOR 1000000
 
 int is_exit = 0; // DO NOT MODIFY THIS VARIABLE
+
 int total_pcpus = 0;
 int total_vcpus = 0;
-int iterationNumber = 0;
 
 unsigned long long int* vcpuUsage;
 unsigned long long int* pcpuUsage;
@@ -48,9 +49,6 @@ int main(int argc, char *argv[])
 		printf("Incorrect number of arguments\n");
 		return 0;
 	}
-	for(int i = 0; i < 50; i++) {
-		printf("i: %d, %d\n", i, VIR_CPU_MAPLEN(i));
-	}
 
 	// Gets the interval passes as a command line argument and sets it as the STATS_PERIOD for collection of balloon memory statistics of the domains
 	int interval = atoi(argv[1]);
@@ -68,20 +66,20 @@ int main(int argc, char *argv[])
 	unsigned int onlineCPUs = 0;
 	unsigned char * cpuMap;
 	int ans = virNodeGetCPUMap(conn, &cpuMap, &onlineCPUs, 0);
-	printf("%x %d\n", *cpuMap, *cpuMap);
-	for(int i = 7; i >= 0; i--) {
-		if(1 & (*cpuMap >> i)) {
-			printf("It's 1\n");
-		} else {
-			printf("It's 0\n");
-		}
-	}
+	// printf("%x %d\n", *cpuMap, *cpuMap);
+	// for(int i = 7; i >= 0; i--) {
+	// 	if(1 & (*cpuMap >> i)) {
+	// 		printf("It's 1\n");
+	// 	} else {
+	// 		printf("It's 0\n");
+	// 	}
+	// }
 	if(ans == -1) {
 		fprintf(stderr, "Error in virNodeGetCPUMap call");
 		exit(0);
 	}
 	total_pcpus = ans;
-	printf("Total pCPUs is %d\n", total_pcpus);
+	// printf("Total pCPUs is %d\n", total_pcpus);
 	pcpuUsage = malloc(sizeof(unsigned long long int) * total_pcpus);
 	memset(pcpuUsage, 0, sizeof(unsigned long long int) * total_pcpus);
 
@@ -106,17 +104,16 @@ int main(int argc, char *argv[])
 /* COMPLETE THE IMPLEMENTATION */
 void CPUScheduler(virConnectPtr conn, int interval)
 {
-	iterationNumber++;
-	printf("Iteration number: %d\n", iterationNumber);
 	virDomainPtr *domainsList;
 	int total_domains;
 
 	unsigned int flags = VIR_CONNECT_LIST_DOMAINS_RUNNING |
 						VIR_CONNECT_LIST_DOMAINS_PERSISTENT;
 	total_domains = virConnectListAllDomains(conn, &domainsList, flags);
-	if (total_domains < 0)
-		printf("error");
-	
+	if (total_domains < 0) {
+		printf("Error in call to virConnectListAllDomains\n");
+		exit(0);
+	}
 	// printf("# Active domains: %d\n", total_domains);
 
 	virVcpuInfoPtr info;
@@ -127,19 +124,20 @@ void CPUScheduler(virConnectPtr conn, int interval)
 		// printf("Usage for vCPU %d for the interval is %llu, CPU is %d\n", i, diff, info->cpu);
 		vcpuUsage[i] = info->cpuTime;
 		pcpuUsage[info->cpu] +=  diff;
-		vcpuarray[i].usage = diff / 1000000;
+		vcpuarray[i].usage = diff / DIV_FACTOR;
 		vcpuarray[i].id = i;
 	}
 
-	for(int i = 0; i < total_pcpus; i++) {
+	// for(int i = 0; i < total_pcpus; i++) {
 		// printf("Usage for CPU %d is %llu\n", i, pcpuUsage[i]);
-	}
+	// }
 
 	double* pcpuUsageNormalized = malloc(sizeof(double) * total_pcpus);
 	for(int i = 0; i < total_pcpus; i++) {
-		pcpuUsageNormalized[i] = (double)(pcpuUsage[i] / 1000000);
-		printf("Normalized usage for CPU %d is %f\n", i, pcpuUsageNormalized[i]);
-		pcpuUsage[i] = 0;
+		pcpuUsageNormalized[i] = (double)(pcpuUsage[i] / DIV_FACTOR);
+		// printf("Normalized usage for CPU %d is %f\n", i, pcpuUsageNormalized[i]);
+
+		pcpuUsage[i] = 0; // Need to set it to zero for next run
 	}
 
 	double sum = 0.0, mean, SD = 0.0;
@@ -156,11 +154,13 @@ void CPUScheduler(virConnectPtr conn, int interval)
 	printf("SD is %f, percent deviation is %f\n", SD, percent);
 
 	if(percent <= 5.0) {
-		printf("No need to change order, returning!\n");
+		printf("Less than 5 percent, no need to change order, returning!\n");
 		return;
 	} else {
-		printf("Deteced imbalance, changing!\n");
+		printf("Greater than 5 percent, deteced imbalance, changing!\n");
 		memset(pcpuUsageNormalized, 0, sizeof(double) * total_pcpus);
+
+		// Sort vCPU usage in descending order
 		for(int i = 0; i < total_domains-1; i++) {
 			for(int j = 0; j < total_domains - i - 1; j++) {
 				if(vcpuarray[j].usage < vcpuarray[j+1].usage) {
@@ -173,9 +173,10 @@ void CPUScheduler(virConnectPtr conn, int interval)
 				}
 			}
 		}
-		for(int i = 0; i < total_domains; i++) {
-			printf("ID: %d, USAGE %f\n", vcpuarray[i].id, vcpuarray[i].usage);
-		}
+
+		// for(int i = 0; i < total_domains; i++) {
+		// 	printf("ID: %d, USAGE %f\n", vcpuarray[i].id, vcpuarray[i].usage);
+		// }
 
 		for(int i = 0; i < total_domains; i++) {
 			double minPcpuusage = pcpuUsageNormalized[0];
@@ -186,14 +187,16 @@ void CPUScheduler(virConnectPtr conn, int interval)
 					minPcpuusageindex = j;
 				}
 			}
-			printf("Min usage %f and min usage CPU is %d\n", minPcpuusage, minPcpuusageindex);
+			// printf("Min usage %f and min usage CPU is %d\n", minPcpuusage, minPcpuusageindex);
 			pcpuUsageNormalized[minPcpuusageindex] += vcpuarray[i].usage;
 			unsigned char* map = malloc(1);
 			*map = (0x01) << (minPcpuusageindex);
-			printf("map is %d \n", *map);
+			// printf("map is %d \n", *map);
 			int status = virDomainPinVcpu(domainsList[i], 0, map, VIR_CPU_MAPLEN(total_pcpus));
 			if(status == -1) {
 				printf("Failure in assigning!\n");
+			} else {
+				printf("Pinned VM %d to PCPU %d\n", i, minPcpuusageindex);
 			}
 		}
 
