@@ -1,0 +1,197 @@
+Script started on 2021-09-19 20:31:19+00:00 [TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="91" LINES="32"]
+$ python3 monitr-  or.py -t runtest3.py
+
+--------------------------------------------------
+Iteration number :  1
+0 - usage: 0.0 | mapping []
+1 - usage: 0.0 | mapping []
+2 - usage: 0.0 | mapping []
+3 - usage: 0.0 | mapping []
+
+--------------------------------------------------
+Iteration number :  2
+0 - usage: 0.0 | mapping ['aos_vm7', 'aos_vm5']
+1 - usage: 2.0 | mapping ['aos_vm6', 'aos_vm4', 'aos_vm2', 'aos_vm8', 'aos_vm1']
+2 - usage: 0.0 | mapping ['aos_vm3']
+3 - usage: 0.0 | mapping []
+
+--------------------------------------------------
+Iteration number :  3
+0 - usage: 0.0 | mapping ['aos_vm7']
+1 - usage: 1.0 | mapping ['aos_vm6', 'aos_vm3', 'aos_vm1']
+2 - usage: 0.0 | mapping ['aos_vm4', 'aos_vm2', 'aos_vm8', 'aos_vm5']
+3 - usage: 0.0 | mapping []
+
+--------------------------------------------------
+Iteration number :  4
+0 - usage: 0.0 | mapping ['aos_vm7', 'aos_vm6', 'aos_vm4', 'aos_vm2', 'aos_vm1', 'aos_vm5']
+1 - usage: 0.0 | mapping []
+2 - usage: 0.0 | mapping ['aos_vm3', 'aos_vm8']
+3 - usage: 0.0 | mapping []
+
+--------------------------------------------------
+Iteration number :  5
+0 - usage: 0.0 | mapping ['aos_vm7', 'aos_vm6', 'aos_vm3', 'aos_vm4', 'aos_vm2', 'aos_vm8', 'aos_vm1', 'aos_vm5']
+1 - usage: 0.0 | mapping []
+2 - usage: 0.0 | mapping []
+3 - usage: 0.0 | mapping []
+
+--------------------------------------------------
+Iteration number :  6
+0 - usage: 7.000000000000001 | mapping ['aos_vm7', 'aos_vm6', 'aos_vm3', 'aos_vm4', 'aos_vm2', 'aos_vm8', 'aos_vm1', 'aos_vm5']
+1 - usage: 0.0 | mapping []
+2 - usage: 0.0 | mapping []
+3 - usage: 0.0 | mapping []
+Warning: Permanently added '192.168.122.100' (ECDSA) to the list of known hosts.
+Warning: Permanently added '192.168.122.254' (ECDSA) to the list of known hosts.
+Warning: Permanently added '192.168.122.52' (ECDSA) to the list of known hosts.
+Warning: Permanently added '192.168.122.118' (ECDSA) to the list of known hosts.
+Warning: Permanently added '192.168.122.106' (ECDSA) to the list of known hosts.
+Warning: Permanently added '192.168.122.198' (ECDSA) to the list of known hosts.
+Warning: Permanently added '192.168.122.219' (ECDSA) to the list of known hosts.
+Warning: Permanently added '192.168.122.4' (ECDSA) to the list of known hosts.
+
+--------------------------------------------------
+Iteration number :  7
+0 - usage: 48.0 | mapping ['aos_vm7', 'aos_vm1']
+1 - usage: 46.0 | mapping ['aos_vm6', 'aos_vm5']
+2 - usage: 46.0 | mapping ['aos_vm3', 'aos_vm2']
+3 - usage: 45.0 | mapping ['aos_vm4', 'aos_vm8']
+
+--------------------------------------------------
+Iteration number :  8
+0 - usage: 102.0 | mapping ['aos_vm7', 'aos_vm1']
+1 - usage: 101.0 | mapping ['aos_vm6', 'aos_vm5']
+2 - usage: 100.0 | mapping ['aos_vm3', 'aos_vm2']
+3 - usage: 98.0 | mapping ['aos_vm4', 'aos_vm8']
+
+--------------------------------------------------
+Iteration number :  9
+0 - usage: 100.0 | mapping ['aos_vm7', 'aos_vm1']
+1 - usage: 98.0 | mapping ['aos_vm6', 'aos_vm5']
+2 - usage: 100.0 | mapping ['aos_vm3', 'aos_vm2']
+3 - usage: 92.0 | mapping ['aos_vm4', 'aos_vm8']
+
+--------------------------------------------------
+Iteration number :  10
+0 - usage: 100.0 | mapping ['aos_vm7', 'aos_vm1']
+1 - usage: 100.0 | mapping ['aos_vm6', 'aos_vm5']
+2 - usage: 99.0 | mapping ['aos_vm3', 'aos_vm2']
+3 - usage: 96.0 | mapping ['aos_vm4', 'aos_vm8']
+
+--------------------------------------------------
+Iteration number :  11
+0 - usage: 92.0 | mapping ['aos_vm7', 'aos_vm1']
+1 - usage: 69.0 | mapping ['aos_vm6', 'aos_vm5']
+2 - usage: 92.0 | mapping ['aos_vm3', 'aos_vm2']
+3 - usage: 78.0 | mapping ['aos_vm4', 'aos_vm8']
+
+--------------------------------------------------
+Iteration number :  12
+0 - usage: 98.0 | mapping ['aos_vm7', 'aos_vm1']
+1 - usage: 66.0 | mapping ['aos_vm6', 'aos_vm5']
+2 - usage: 99.0 | mapping ['aos_vm3', 'aos_vm2']
+3 - usage: 63.0 | mapping ['aos_vm4', 'aos_vm8']
+
+--------------------------------------------------
+Iteration number :  13
+0 - usage: 82.0 | mapping ['aos_vm7', 'aos_vm5']
+1 - usage: 80.0 | mapping ['aos_vm6', 'aos_vm1']
+2 - usage: 81.0 | mapping ['aos_vm3', 'aos_vm8']
+3 - usage: 84.00000000000001 | mapping ['aos_vm4', 'aos_vm2']
+
+--------------------------------------------------
+Iteration number :  14
+0 - usage: 84.00000000000001 | mapping ['aos_vm7', 'aos_vm5']
+1 - usage: 84.00000000000001 | mapping ['aos_vm6', 'aos_vm1']
+2 - usage: 85.00000000000001 | mapping ['aos_vm3', 'aos_vm8']
+3 - usage: 82.0 | mapping ['aos_vm4', 'aos_vm2']
+
+--------------------------------------------------
+Iteration number :  15
+0 - usage: 83.0 | mapping ['aos_vm7', 'aos_vm5']
+1 - usage: 77.0 | mapping ['aos_vm6', 'aos_vm1']
+2 - usage: 84.00000000000001 | mapping ['aos_vm3', 'aos_vm8']
+3 - usage: 81.0 | mapping ['aos_vm4', 'aos_vm2']
+
+--------------------------------------------------
+Iteration number :  16
+0 - usage: 85.00000000000001 | mapping ['aos_vm7', 'aos_vm5']
+1 - usage: 84.00000000000001 | mapping ['aos_vm6', 'aos_vm1']
+2 - usage: 83.0 | mapping ['aos_vm3', 'aos_vm8']
+3 - usage: 83.0 | mapping ['aos_vm4', 'aos_vm2']
+
+--------------------------------------------------
+Iteration number :  17
+0 - usage: 84.00000000000001 | mapping ['aos_vm7', 'aos_vm5']
+1 - usage: 79.0 | mapping ['aos_vm6', 'aos_vm1']
+2 - usage: 85.00000000000001 | mapping ['aos_vm3', 'aos_vm8']
+3 - usage: 82.0 | mapping ['aos_vm4', 'aos_vm2']
+
+--------------------------------------------------
+Iteration number :  18
+0 - usage: 83.0 | mapping ['aos_vm7', 'aos_vm5']
+1 - usage: 85.00000000000001 | mapping ['aos_vm6', 'aos_vm1']
+2 - usage: 85.00000000000001 | mapping ['aos_vm3', 'aos_vm8']
+3 - usage: 84.00000000000001 | mapping ['aos_vm4', 'aos_vm2']
+
+--------------------------------------------------
+Iteration number :  19
+0 - usage: 84.00000000000001 | mapping ['aos_vm7', 'aos_vm5']
+1 - usage: 80.0 | mapping ['aos_vm6', 'aos_vm1']
+2 - usage: 83.0 | mapping ['aos_vm3', 'aos_vm8']
+3 - usage: 82.0 | mapping ['aos_vm4', 'aos_vm2']
+
+--------------------------------------------------
+Iteration number :  20
+0 - usage: 83.0 | mapping ['aos_vm7', 'aos_vm5']
+1 - usage: 84.00000000000001 | mapping ['aos_vm6', 'aos_vm1']
+2 - usage: 84.00000000000001 | mapping ['aos_vm3', 'aos_vm8']
+3 - usage: 84.00000000000001 | mapping ['aos_vm4', 'aos_vm2']
+
+--------------------------------------------------
+Iteration number :  21
+0 - usage: 82.0 | mapping ['aos_vm7', 'aos_vm5']
+1 - usage: 79.0 | mapping ['aos_vm6', 'aos_vm1']
+2 - usage: 82.0 | mapping ['aos_vm3', 'aos_vm8']
+3 - usage: 82.0 | mapping ['aos_vm4', 'aos_vm2']
+
+--------------------------------------------------
+Iteration number :  22
+0 - usage: 84.00000000000001 | mapping ['aos_vm7', 'aos_vm5']
+1 - usage: 83.0 | mapping ['aos_vm6', 'aos_vm1']
+2 - usage: 83.0 | mapping ['aos_vm3', 'aos_vm8']
+3 - usage: 84.00000000000001 | mapping ['aos_vm4', 'aos_vm2']
+
+--------------------------------------------------
+Iteration number :  23
+0 - usage: 85.00000000000001 | mapping ['aos_vm7', 'aos_vm5']
+1 - usage: 81.0 | mapping ['aos_vm6', 'aos_vm1']
+2 - usage: 83.0 | mapping ['aos_vm3', 'aos_vm8']
+3 - usage: 83.0 | mapping ['aos_vm4', 'aos_vm2']
+
+--------------------------------------------------
+Iteration number :  24
+0 - usage: 84.00000000000001 | mapping ['aos_vm7', 'aos_vm5']
+1 - usage: 83.0 | mapping ['aos_vm6', 'aos_vm1']
+2 - usage: 85.00000000000001 | mapping ['aos_vm3', 'aos_vm8']
+3 - usage: 84.00000000000001 | mapping ['aos_vm4', 'aos_vm2']
+
+--------------------------------------------------
+Iteration number :  25
+0 - usage: 81.0 | mapping ['aos_vm7', 'aos_vm5']
+1 - usage: 84.00000000000001 | mapping ['aos_vm6', 'aos_vm1']
+2 - usage: 83.0 | mapping ['aos_vm3', 'aos_vm8']
+3 - usage: 83.0 | mapping ['aos_vm4', 'aos_vm2']
+$ Warning: Permanently added '192.168.122.219' (ECDSA) to the list of known hosts.
+Warning: Permanently added '192.168.122.254' (ECDSA) to the list of known hosts.
+Warning: Permanently added '192.168.122.52' (ECDSA) to the list of known hosts.
+Warning: Permanently added '192.168.122.106' (ECDSA) to the list of known hosts.
+Warning: Permanently added '192.168.122.118' (ECDSA) to the list of known hosts.
+Warning: Permanently added '192.168.122.198' (ECDSA) to the list of known hosts.
+Warning: Permanently added '192.168.122.100' (ECDSA) to the list of known hosts.
+Warning: Permanently added '192.168.122.4' (ECDSA) to the list of known hosts.
+
+$ exit
+
+Script done on 2021-09-19 20:32:15+00:00 [COMMAND_EXIT_CODE="0"]
