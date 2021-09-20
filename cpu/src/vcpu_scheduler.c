@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	// for(int pcpus = 4; pcpus < 24; pcpus++) {
+	// for(int pcpus = 1; pcpus < 24; pcpus++) {
 	// 	for(int j = 0; j < pcpus; j++) {
 	// 		unsigned char* map = generateMap(pcpus, j);
 	// 		for(int i = 0; i < VIR_CPU_MAPLEN(pcpus); i++) {
