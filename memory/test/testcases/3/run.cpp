@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <string.h>
 
-#define PAGE_SIZE 1024 * 40
+#define PAGE_SIZE 1024 * 4
 #define TIME_SLEEP 100
 #define QUICK_TEM 131072 /* 512MB */ 
 
