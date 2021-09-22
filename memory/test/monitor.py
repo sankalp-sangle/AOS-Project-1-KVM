@@ -39,7 +39,7 @@ def run(sc,vmobjlist,machineParseable, iterations, test):
 
         i+=1
 
-    if iterations == 50:
+    if iterations == 90:
         return
     sc.enter(2, 1, run, (sc,vmobjlist,machineParseable,iterations, test))
 
