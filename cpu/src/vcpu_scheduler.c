@@ -8,15 +8,16 @@
 #include<signal.h>
 #define MIN(a,b) ((a)<(b)?a:b)
 #define MAX(a,b) ((a)>(b)?a:b)
-#define DIV_FACTOR 1000000
+#define DIV_FACTOR 1000
 
 int is_exit = 0; // DO NOT MODIFY THIS VARIABLE
 
 int total_pcpus = 0;
 int total_vcpus = 0;
+int firstIteration = 1;
 
-unsigned long long int* vcpuUsage;
-unsigned long long int* pcpuUsage;
+unsigned long long int* vcpuUsage; // Stores the per vcpu cpuTime (from the start)
+unsigned long long int* pcpuUsage; // Stores the per pCPU cpuTime (for the last interval)
 
 
 typedef struct vcpuNode {
@@ -24,7 +25,7 @@ typedef struct vcpuNode {
 	int id;
 } vcpuNode;
 
-vcpuNode* vcpuarray;
+vcpuNode* vcpuarray; // Stores the per vcpu cpuTime for the last interval
 
 void CPUScheduler(virConnectPtr conn,int interval);
 
@@ -60,18 +61,6 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	// for(int pcpus = 1; pcpus < 24; pcpus++) {
-	// 	for(int j = 0; j < pcpus; j++) {
-	// 		unsigned char* map = generateMap(pcpus, j);
-	// 		for(int i = 0; i < VIR_CPU_MAPLEN(pcpus); i++) {
-	// 			printf("%d ", *map);
-	// 			map++;
-	// 		}
-	// 		printf("Done\n");
-	// 	}
-	// 	printf("Finished pcpu test for %d\n", pcpus);
-	// }
-
 	// Gets the interval passes as a command line argument and sets it as the STATS_PERIOD for collection of balloon memory statistics of the domains
 	int interval = atoi(argv[1]);
 	
@@ -83,33 +72,6 @@ int main(int argc, char *argv[])
 	}
 
 	signal(SIGINT, signal_callback_handler);
-
-	// Get the total number of pCpus in the host
-	unsigned int onlineCPUs = 0;
-	unsigned char * cpuMap; // Comments: Free it later
-	int ans = virNodeGetCPUMap(conn, &cpuMap, &onlineCPUs, 0);
-	// printf("%x %d\n", *cpuMap, *cpuMap);
-	// for(int i = 7; i >= 0; i--) {
-	// 	if(1 & (*cpuMap >> i)) {
-	// 		printf("It's 1\n");
-	// 	} else {
-	// 		printf("It's 0\n");
-	// 	}
-	// }
-	if(ans == -1) {
-		fprintf(stderr, "Error in virNodeGetCPUMap call");
-		exit(0);
-	}
-	total_pcpus = ans;
-	// printf("Total pCPUs is %d\n", total_pcpus);
-	pcpuUsage = malloc(sizeof(unsigned long long int) * total_pcpus);
-	memset(pcpuUsage, 0, sizeof(unsigned long long int) * total_pcpus);
-
-	// Get the total number of vCpus in the host
-	int numDomains = virConnectNumOfDomains(conn);
-	vcpuUsage = malloc(sizeof(unsigned long long int) * numDomains);
-	memset(vcpuUsage, 0, sizeof(unsigned long long int) * numDomains);
-	vcpuarray = malloc(sizeof(vcpuNode) * numDomains);
 
 	while(!is_exit)
 	// Run the CpuScheduler function that checks the CPU Usage and sets the pin at an interval of "interval" seconds
@@ -126,6 +88,39 @@ int main(int argc, char *argv[])
 /* COMPLETE THE IMPLEMENTATION */
 void CPUScheduler(virConnectPtr conn, int interval)
 {
+	// Get the total number of pCpus in the host
+	unsigned int onlineCPUs = 0;
+	unsigned char * cpuMap;
+	int ans = virNodeGetCPUMap(conn, &cpuMap, &onlineCPUs, 0);
+	if(ans == -1) {
+		fprintf(stderr, "Error in virNodeGetCPUMap call");
+		exit(0);
+	}
+	total_pcpus = ans;
+	free(cpuMap);
+
+	printf("# pCPUs is %d\n", total_pcpus);
+
+	// Using the number of pCPUs, allocate memory and initialize the pcpuUsage array.
+	pcpuUsage = malloc(sizeof(unsigned long long int) * total_pcpus);
+	memset(pcpuUsage, 0, sizeof(unsigned long long int) * total_pcpus);
+
+	// Get the total number of vCpus in the host
+	int numDomains = virConnectNumOfDomains(conn);
+	if(numDomains == -1) {
+		fprintf(stderr, "Error in virConnectNumOfDomains call");
+		exit(0);
+	}
+	total_vcpus = numDomains;
+
+	// Using the number of vCPUs, allocate memory and initialize the vcpuUsage array.
+	if(firstIteration == 1) {
+		vcpuUsage = malloc(sizeof(unsigned long long int) * total_vcpus);
+		memset(vcpuUsage, 0, sizeof(unsigned long long int) * total_vcpus);
+		vcpuarray = malloc(sizeof(vcpuNode) * total_vcpus);
+		firstIteration = 0;
+	}
+
 	virDomainPtr *domainsList;
 	int total_domains;
 
@@ -136,12 +131,16 @@ void CPUScheduler(virConnectPtr conn, int interval)
 		printf("Error in call to virConnectListAllDomains\n");
 		exit(0);
 	}
-	// printf("# Active domains: %d\n", total_domains);
+	printf("# Active domains is %d\n", total_domains);
 
 	virVcpuInfoPtr info;
 	info = malloc(sizeof(virVcpuInfoPtr));
 	for(int i = 0; i < total_domains; i++) {
 		int ret = virDomainGetVcpus(domainsList[i], info, 1, NULL, 0);
+		if(ret == -1) {
+			fprintf(stderr, "Error in call to virDomainGetVcpus");
+			exit(0);
+		}
 		unsigned long long int diff = info->cpuTime - vcpuUsage[i];
 		// printf("Usage for vCPU %d for the interval is %llu, CPU is %d\n", i, diff, info->cpu);
 		vcpuUsage[i] = info->cpuTime;
@@ -150,15 +149,9 @@ void CPUScheduler(virConnectPtr conn, int interval)
 		vcpuarray[i].id = i;
 	}
 
-	// for(int i = 0; i < total_pcpus; i++) {
-		// printf("Usage for CPU %d is %llu\n", i, pcpuUsage[i]);
-	// }
-
 	double* pcpuUsageNormalized = malloc(sizeof(double) * total_pcpus);
 	for(int i = 0; i < total_pcpus; i++) {
 		pcpuUsageNormalized[i] = (double)(pcpuUsage[i] / DIV_FACTOR);
-		// printf("Normalized usage for CPU %d is %f\n", i, pcpuUsageNormalized[i]);
-
 		pcpuUsage[i] = 0; // Need to set it to zero for next run
 	}
 
@@ -196,10 +189,6 @@ void CPUScheduler(virConnectPtr conn, int interval)
 			}
 		}
 
-		// for(int i = 0; i < total_domains; i++) {
-		// 	printf("ID: %d, USAGE %f\n", vcpuarray[i].id, vcpuarray[i].usage);
-		// }
-
 		for(int i = 0; i < total_domains; i++) {
 			double minPcpuusage = pcpuUsageNormalized[0];
 			int minPcpuusageindex = 0;
@@ -222,15 +211,6 @@ void CPUScheduler(virConnectPtr conn, int interval)
 				printf("Pinned VM %d to PCPU %d\n", i, minPcpuusageindex);
 			}
 		}
-
-
 	}
-
-
 	free(info);
-	
 }
-
-
-
-
