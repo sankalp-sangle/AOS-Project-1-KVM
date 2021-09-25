@@ -20,6 +20,7 @@ int is_exit = 0; // DO NOT MODIFY THE VARIABLE
 
 unsigned long host_free_memory = 0;
 int total_domains = 0;
+int firstIteration = 1;
 virDomainPtr *domainsList;
 int* countOfExcessCycles;
 
@@ -104,29 +105,6 @@ int main(int argc, char *argv[])
 
 	signal(SIGINT, signal_callback_handler);
 
-
-
-	unsigned int flags = VIR_CONNECT_LIST_DOMAINS_RUNNING |
-						VIR_CONNECT_LIST_DOMAINS_PERSISTENT;
-	total_domains = virConnectListAllDomains(conn, &domainsList, flags);
-	if (total_domains < 0) {
-		printf("Error in call to virConnectListAllDomains\n");
-		exit(0);
-	}
-
-	countOfExcessCycles = malloc(sizeof(int) * total_domains);
-
-	for(int i = 0; i < total_domains; i++) {
-		int ret = virDomainSetMemoryStatsPeriod(domainsList[i], interval, VIR_DOMAIN_AFFECT_CURRENT);
-		if(ret == -1) {
-			printf("Failure in virDomainSetMemorStatsPeriod call\n");
-			exit(0);
-		}
-		countOfExcessCycles[i] = 0;
-	}
-
-	
-
 	while(!is_exit)
 	{
 		// Calls the MemoryScheduler function after every 'interval' seconds
@@ -144,6 +122,28 @@ COMPLETE THE IMPLEMENTATION
 */
 void MemoryScheduler(virConnectPtr conn, int interval)
 {
+	if(firstIteration == 1) {
+		unsigned int flags = VIR_CONNECT_LIST_DOMAINS_RUNNING |
+							VIR_CONNECT_LIST_DOMAINS_PERSISTENT;
+		total_domains = virConnectListAllDomains(conn, &domainsList, flags);
+		if (total_domains < 0) {
+			printf("Error in call to virConnectListAllDomains\n");
+			exit(0);
+		}
+
+		countOfExcessCycles = malloc(sizeof(int) * total_domains);
+
+		for(int i = 0; i < total_domains; i++) {
+			int ret = virDomainSetMemoryStatsPeriod(domainsList[i], interval, VIR_DOMAIN_AFFECT_CURRENT);
+			if(ret == -1) {
+				printf("Failure in virDomainSetMemorStatsPeriod call\n");
+				exit(0);
+			}
+			countOfExcessCycles[i] = 0;
+		}
+		firstIteration = 0;
+	}
+
 	printf("+++++++++++++++++++++++++++++++++++++++\n");
 	int nparams = 0;
 	virNodeMemoryStatsPtr params;
